@@ -9,7 +9,7 @@ const CARDAPIO = `*Cardápio 3000*
 - Pizza de óleo de motor
 - Suco de Bateria`
 
-export const stateMachine = async (chat: any, intention: any, text: any): Promise<string> => {
+export const stateMachine = async (chat: any, intention: any, text: any): Promise<any> => {
   const user = await getUser(chat.id)
 
   let result = ''
@@ -17,7 +17,7 @@ export const stateMachine = async (chat: any, intention: any, text: any): Promis
   let newStatus = 'new'
 
   if (user) {
-    status = user['Status']
+    status = user['status']
   }
   console.log('[INTENTION] ', intention)
 
@@ -299,7 +299,7 @@ export const stateMachine = async (chat: any, intention: any, text: any): Promis
 
   await updateUserStatus(chat.id, chat.first_name, newStatus)
 
-  return result
+  return { result, status, newStatus }
 }
 
 const getUser = async (chat_id: any): Promise<any> => {

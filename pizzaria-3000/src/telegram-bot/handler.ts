@@ -23,7 +23,8 @@ export const main: APIGatewayProxyHandler = async (event): Promise<any> => {
 
   const bot = new TelegramBot(token, chat.id)
 
-  if (!chat.id) { // != '5186036474'
+  if (!chat.id) {
+    // != '5186036474'
     const options = qs.stringify({
       chat_id: chat.id,
       text: `Olá, desculpe o transtorno mas meu criador desligou meu "cérebro"
@@ -37,6 +38,8 @@ então não consigo pensar agora 😔, tente novamente mais tarde!`,
       try {
         let message = ''
         let intention = ''
+        let status = ''
+        let newStatus = ''
         switch (text) {
           case '/start':
           case '/help':
@@ -86,14 +89,17 @@ Estamos em teste, a inteção capturada irá aparecer no final de toda mensagem.
               const classification = JSON.parse(classificationString)
               intention = classification.body
 
-              message = await stateMachine(chat, intention, text)
+              const stateMachineResult = await stateMachine(chat, intention, text)
+              message = stateMachineResult.message
+              status = stateMachineResult.status
+              newStatus = stateMachineResult.newStatus
             }
             break
         }
 
         const options = qs.stringify({
           chat_id: chat.id,
-          text: `${message.replace('_', '\\_')}` + `\n\n(${intention})`,
+          text: `${message.replace('_', '\\_')}` + `\n\n(${intention.replace('_', '\\_')}|${status}|${newStatus})`,
           parse_mode: 'markdown',
         })
         await bot.publicCall('sendMessage', options)
