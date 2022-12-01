@@ -1,0 +1,46 @@
+Resources:
+  #====================================
+  #
+  #       Telegram Bot IAM Role
+  #
+  #====================================
+
+  TelegramBotRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: pizzaria-3000-${param:stage}-telegram-bot-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref Pizzaria3000DefaultPolicy
+        - !Ref Pizzaria3000LambdaInvokePolicy
+        - !Ref Pizzaria3000DynamoFullAccessPolicy
+        - !Ref Pizzaria3000SQSPolicy
+
+  #====================================
+  #
+  #         Inference IAM Role
+  #
+  #====================================
+
+  InferenceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: pizzaria-3000-${param:stage}-inference-role
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - !Ref Pizzaria3000DefaultPolicy
+        - !Ref Pizzaria3000S3GetObjectModelsPolicy

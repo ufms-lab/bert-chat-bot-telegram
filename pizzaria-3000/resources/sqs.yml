@@ -1,0 +1,8 @@
+Resources:
+  DeliveryQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: DeliveryQueue.fifo
+      VisibilityTimeout: 180
+      DelaySeconds: 60
+      FifoQueue: true

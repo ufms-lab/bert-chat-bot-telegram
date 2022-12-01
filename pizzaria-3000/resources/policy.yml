@@ -1,0 +1,104 @@
+Resources:
+  #====================================
+  #
+  #        Default IAM Policy
+  #
+  #====================================
+
+  #=====         DEFAULT          =====
+  Pizzaria3000DefaultPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pizzaria-3000-default-${param:stage}-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - 'logs:CreateLogStream'
+              - 'logs:CreateLogGroup'
+            Resource: 'arn:aws:logs:${param:region}:${param:accountId}:log-group:/aws/lambda/pizzaria-3000-api-${param:stage}*:*'
+          - Effect: Allow
+            Action:
+              - 'logs:PutLogEvents'
+            Resource: 'arn:aws:logs:${param:region}:${param:accountId}:log-group:/aws/lambda/pizzaria-3000-api-${param:stage}*:*:*'
+          - Effect: Allow
+            Action:
+              - 'xray:PutTraceSegments'
+              - 'xray:PutTelemetryRecords'
+            Resource: '*'
+
+  #====================================
+  #
+  #        Lambda IAM Policy
+  #
+  #====================================
+
+  #=====         INVOKE           =====
+  Pizzaria3000LambdaInvokePolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pizzaria-3000-${param:stage}-lambda-invoke-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - "lambda:InvokeFunction"
+              - "lambda:InvokeAsync"
+            Resource: arn:aws:lambda:${param:region}:*:*
+
+  #====================================
+  #
+  #           S3 IAM Policy
+  #
+  #====================================
+
+  #=====       GetObject          =====
+  Pizzaria3000S3GetObjectModelsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pizzaria-3000-${param:stage}-s3-get-object-models-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - "s3:GetObject"
+            Resource: arn:aws:s3:::pizzaria-3000-models/*
+
+  #====================================
+  #
+  #          Dynamo IAM Policy
+  #
+  #====================================
+
+  #=====       FullAccess         =====
+  Pizzaria3000DynamoFullAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pizzaria-3000-${param:stage}-dynamo-fullaccess-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: '*'
+            Resource: arn:aws:dynamodb:us-east-2:362055834550:table/pizzaria3000
+
+  #====================================
+  #
+  #            SQS IAM Policy
+  #
+  #====================================
+
+  #=====       FullAccess         =====
+  Pizzaria3000SQSPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      ManagedPolicyName: pizzaria-3000-${param:stage}-sqs-fullaccess-policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action: 'sqs:*'
+            Resource: arn:aws:sqs:us-east-2:362055834550:DeliveryQueue.fifo

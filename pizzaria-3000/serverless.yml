@@ -1,0 +1,161 @@
+#====================================
+#
+#         Pizzaria 3000 API
+#
+#====================================
+
+service: pizzaria-3000-api
+frameworkVersion: '3'
+useDotenv: true
+
+#====================================
+#
+#              Plugins
+#
+#====================================
+
+plugins:
+  - serverless-esbuild
+  - serverless-layers
+
+#====================================
+#
+#        Params configuration
+#
+#====================================
+
+params:
+  default:
+    accountId: ${env:TARGET_ACCOUNT_ID, 123456789012}
+    region: ${self:provider.region}
+    stage: ${self:provider.stage}
+
+#====================================
+#
+#        Provider configuration
+#
+#====================================
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  memorySize: 1024
+  versionFunctions: false
+  stage: ${opt:stage, 'local'}
+  region: ${opt:region, 'us-east-2'}
+  deploymentBucket:
+    name: ${env:BUCKET_DEVOPS}
+    serverSideEncryption: AES256
+  logRetentionInDays: ${env:CLOUDWATCH_RETENTION}
+  apiGateway:
+    metrics: true
+    disableDefaultEndpoint: true
+  tracing:
+    apiGateway: true
+    lambda: true
+  environment:
+    ENV: ${self:provider.stage}
+    REGION: ${self:provider.region}
+  ecr:
+    images:
+      inference:
+        path: ./src/inference
+
+#====================================
+#
+#        Package configuration
+#
+#====================================
+
+package:
+  individually: true
+  excludeDevDependencies: true
+  patterns:
+    - '!node_modules/**'
+
+#====================================
+#
+#        Custom configuration
+#       Plugins configurations
+#
+#====================================
+
+custom:
+  serverless-layers:
+    functions:
+      - telegram-bot
+  esbuild:
+    format: "cjs"
+    platform: "node"
+    target: "node16"
+    bundle: true
+    minify: true
+    sourcemap: false
+    plugins: ./esbuild.plugins.js
+    exclude: '*'
+    watch:
+      pattern:
+        - 'src/**/*.ts'
+
+#====================================
+#
+#         Functions (Lambda)
+#
+#====================================
+
+functions:
+  telegram-bot:
+    handler: ./src/telegram-bot/handler.main
+    role: TelegramBotRole
+    timeout: 30
+    environment:
+      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+      TABLE: pizzaria3000
+      SQS: DeliveryQueue.fifo
+    events:
+      - http:
+          method: POST
+          path: /telegram-bot
+          cors: true
+
+  telegram-bot-delivery:
+    handler: ./src/telegram-bot/delivery.main
+    role: TelegramBotRole
+    timeout: 30
+    environment:
+      TELEGRAM_TOKEN: ${env:TELEGRAM_TOKEN}
+      TABLE: pizzaria3000
+      SQS: DeliveryQueue.fifo
+    events:
+      - sqs: arn:aws:sqs:us-east-2:362055834550:DeliveryQueue.fifo
+
+
+  inference:
+    image:
+      name: inference
+    role: InferenceRole
+    timeout: 900
+    memorySize: 2048
+    environment:
+      TRANSFORMERS_CACHE: /tmp/huggingface/hub
+    #provisionedConcurrency: 1
+
+#====================================
+#
+#     Resources (CloudFormation)
+#
+#====================================
+
+resources:
+
+  ## IAM Policies
+  - ${file(resources/policy.yml)} # Policy
+
+  ## Global
+  - ${file(resources/role.yml)} # GlobalRole
+
+  ## Global
+  - ${file(resources/dynamo.yml)} # DynamoTable
+
+    ## SQS
+  - ${file(resources/sqs.yml)} # SQS FIFO Queue
