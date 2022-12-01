@@ -6,7 +6,7 @@ ChatBot
 
 [Dataset](https://docs.google.com/spreadsheets/d/1XNFDohlIBX8IRRcrVdha-_aLv27lzixZqmMFHaIkGpc)
 
-[@ufms_lab_pizzaria_chat_bot](https://t.me/ufms_lab_pizzaria_chat_bot)
+Telegram [@ufms_lab_pizzaria_chat_bot](https://t.me/ufms_lab_pizzaria_chat_bot)
 
 
 ## Development setup
