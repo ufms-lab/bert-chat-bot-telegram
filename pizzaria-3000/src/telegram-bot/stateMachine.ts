@@ -299,7 +299,9 @@ export const stateMachine = async (chat: any, intention: any, text: any): Promis
 
   await updateUserStatus(chat.id, chat.first_name, newStatus)
 
-  return { result, status, newStatus }
+  console.log('[result, status, newStatus] ', result, status, newStatus)
+
+  return { message: result, status, newStatus }
 }
 
 const getUser = async (chat_id: any): Promise<any> => {
@@ -328,8 +330,6 @@ export const updateUserStatus = async (chat_id: any, user_name: string, status: 
   }
 
   const result = await ChatEntity.put(user)
-
-  console.log('[updateUser] result - ', result)
 
   return result
 }

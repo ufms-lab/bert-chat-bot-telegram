@@ -37,9 +37,9 @@ então não consigo pensar agora 😔, tente novamente mais tarde!`,
     if (text) {
       try {
         let message = ''
-        let intention = ''
-        let status = ''
-        let newStatus = ''
+        let intention = 'N'
+        let status = 'N'
+        let newStatus = 'N'
         switch (text) {
           case '/start':
           case '/help':
@@ -47,7 +47,8 @@ então não consigo pensar agora 😔, tente novamente mais tarde!`,
               message = `*UFMS Lab - Pizzaria 3000 (ChatBot)*
 Alison Vilela
 
-Estamos em teste, a inteção capturada irá aparecer no final de toda mensagem.
+Estamos em teste, a inteção capturada e estado irá aparecer no final de toda mensagem.
+Posso estar um pouco lento é que estou em processo de debugging!
 
 *Available commands*
 - /start - /help -> Mensagem de boas vindas e informações de como eu funciono.
@@ -67,7 +68,7 @@ Estamos em teste, a inteção capturada irá aparecer no final de toda mensagem.
 - Cancelar pedido`
             }
             break
-          case '/model':
+          case '/modelo':
             {
               message = 'neuralmind/bert-base-portuguese-cased'
             }
@@ -99,7 +100,7 @@ Estamos em teste, a inteção capturada irá aparecer no final de toda mensagem.
 
         const options = qs.stringify({
           chat_id: chat.id,
-          text: `${message.replace('_', '\\_')}` + `\n\n(${intention.replace('_', '\\_')}|${status}|${newStatus})`,
+          text: `${message}` + `\n\n(${intention}|${status}|${newStatus})`.replace('_', '\\_'),
           parse_mode: 'markdown',
         })
         await bot.publicCall('sendMessage', options)
