@@ -2,6 +2,13 @@
 
 ChatBot
 
+[Colab](https://colab.research.google.com/drive/1qWO_zWxYpEEsFeE7Gq-523DDntXwW1tB)
+
+[Dataset](https://docs.google.com/spreadsheets/d/1XNFDohlIBX8IRRcrVdha-_aLv27lzixZqmMFHaIkGpc)
+
+[@ufms_lab_pizzaria_chat_bot](https://t.me/ufms_lab_pizzaria_chat_bot)
+
+
 ## Development setup
 
 This section will guide you on how to setup your development environment.
